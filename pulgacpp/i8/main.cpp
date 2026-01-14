@@ -1,11 +1,9 @@
 // Test program for pulgacpp::i8
-// Compile with C++23 modules support:
-//   MSVC:  cl /std:c++latest /EHsc /experimental:module main.cpp
-//   Clang: clang++ -std=c++23 -fmodules main.cpp
-//   GCC:   g++ -std=c++23 -fmodules-ts main.cpp
+// Compile: cl /std:c++latest /EHsc /W4 /I../.. main.cpp
+//      or: g++ -std=c++23 -Wall -I../.. main.cpp -o test_i8
+//      or: clang++ -std=c++23 -Wall -I../.. main.cpp -o test_i8
 
-import pulgacpp.i8;
-
+#include "i8.hpp"
 #include <iostream>
 #include <string_view>
 
