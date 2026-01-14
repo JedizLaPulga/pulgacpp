@@ -47,17 +47,12 @@ public:
     /// Creates an i16 from a value, saturating at MIN/MAX if out of range.
     template <std::integral T>
     [[nodiscard]] static constexpr i16 saturating_from(T value) noexcept {
-        if constexpr (std::is_signed_v<T>) {
-            if (value < static_cast<T>(MIN)) {
-                return i16(MIN);
-            }
-            if (value > static_cast<T>(MAX)) {
-                return i16(MAX);
-            }
-        } else {
-            if (value > static_cast<std::make_unsigned_t<underlying_type>>(MAX)) {
-                return i16(MAX);
-            }
+        auto wide_value = static_cast<std::int32_t>(value);
+        if (wide_value < static_cast<std::int32_t>(MIN)) {
+            return i16(MIN);
+        }
+        if (wide_value > static_cast<std::int32_t>(MAX)) {
+            return i16(MAX);
         }
         return i16(static_cast<underlying_type>(value));
     }
