@@ -239,6 +239,64 @@ int main() {
         test(mapped.is_some() && mapped.unwrap() == 120, "map() transforms value");
     }
 
+    // --- Type Conversions: to<T>() ---
+    std::cout << "\n--- Type Conversions: to<T>() ---\n";
+    {
+        auto a = 50_i8;
+
+        // Widening to larger signed types - always succeeds
+        auto to_i16 = a.to<std::int16_t>();
+        test(to_i16.is_some() && to_i16.unwrap() == 50, "to<int16_t>() widens correctly");
+
+        auto to_i32 = a.to<std::int32_t>();
+        test(to_i32.is_some() && to_i32.unwrap() == 50, "to<int32_t>() widens correctly");
+
+        auto to_i64 = a.to<std::int64_t>();
+        test(to_i64.is_some() && to_i64.unwrap() == 50, "to<int64_t>() widens correctly");
+
+        // Widening to unsigned - works for non-negative
+        auto to_u8 = a.to<std::uint8_t>();
+        test(to_u8.is_some() && to_u8.unwrap() == 50, "to<uint8_t>() works for positive");
+
+        auto to_u16 = a.to<std::uint16_t>();
+        test(to_u16.is_some() && to_u16.unwrap() == 50, "to<uint16_t>() works for positive");
+
+        // Negative to unsigned - fails
+        auto neg = i8(static_cast<std::int8_t>(-50));
+        auto neg_to_u8 = neg.to<std::uint8_t>();
+        test(neg_to_u8.is_none(), "to<uint8_t>() returns None for negative");
+
+        auto neg_to_u32 = neg.to<std::uint32_t>();
+        test(neg_to_u32.is_none(), "to<uint32_t>() returns None for negative");
+
+        // Edge case: MAX value
+        auto max_val = i8(i8::MAX);
+        auto max_to_u8 = max_val.to<std::uint8_t>();
+        test(max_to_u8.is_some() && max_to_u8.unwrap() == 127, "to<uint8_t>() works for MAX");
+    }
+
+    // --- Type Conversions: as<T>() ---
+    std::cout << "\n--- Type Conversions: as<T>() ---\n";
+    {
+        auto a = 50_i8;
+
+        // Unchecked widening
+        test(a.as<int>() == 50, "as<int>() works");
+        test(a.as<std::int16_t>() == 50, "as<int16_t>() works");
+        test(a.as<std::int64_t>() == 50, "as<int64_t>() works");
+
+        // Unchecked to unsigned (positive value)
+        test(a.as<std::uint8_t>() == 50, "as<uint8_t>() works for positive");
+        test(a.as<unsigned int>() == 50, "as<unsigned int>() works for positive");
+
+        // Unchecked negative to unsigned (wraps, like C)
+        auto neg = i8(static_cast<std::int8_t>(-1));
+        test(neg.as<std::uint8_t>() == 255, "as<uint8_t>() wraps -1 to 255");
+
+        auto neg50 = i8(static_cast<std::int8_t>(-50));
+        test(neg50.as<std::uint8_t>() == 206, "as<uint8_t>() wraps -50 to 206");
+    }
+
     // --- Summary ---
     std::cout << "\n=== Test Summary ===\n";
     std::cout << "Passed: " << g_tests_passed << '\n';

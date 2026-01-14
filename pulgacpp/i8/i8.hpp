@@ -58,6 +58,37 @@ public:
     [[nodiscard]] constexpr underlying_type get() const noexcept { return m_value; }
     [[nodiscard]] constexpr explicit operator underlying_type() const noexcept { return m_value; }
 
+    // Type conversions
+    /// Converts to type T, returning None if the value doesn't fit.
+    /// Use for safe narrowing or widening conversions.
+    template <std::integral T>
+    [[nodiscard]] constexpr Optional<T> to() const noexcept {
+        // Check if value fits in target type
+        if constexpr (std::is_signed_v<T>) {
+            // Signed target: check both bounds
+            if (m_value < std::numeric_limits<T>::min() || m_value > std::numeric_limits<T>::max()) {
+                return None;
+            }
+        } else {
+            // Unsigned target: negative values don't fit
+            if (m_value < 0) {
+                return None;
+            }
+            if (static_cast<std::make_unsigned_t<underlying_type>>(m_value) > std::numeric_limits<T>::max()) {
+                return None;
+            }
+        }
+        return Some(static_cast<T>(m_value));
+    }
+
+    /// Unchecked conversion to type T (like Rust's `as` keyword).
+    /// Performs a static_cast without bounds checking.
+    /// Use when you know the conversion is safe or want truncation behavior.
+    template <std::integral T>
+    [[nodiscard]] constexpr T as() const noexcept {
+        return static_cast<T>(m_value);
+    }
+
     // Checked arithmetic - returns Optional<i8>
     [[nodiscard]] constexpr Optional<i8> checked_add(i8 rhs) const noexcept {
         std::int16_t result = static_cast<std::int16_t>(m_value) + static_cast<std::int16_t>(rhs.m_value);
