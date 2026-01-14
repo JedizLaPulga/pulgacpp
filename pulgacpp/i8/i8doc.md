@@ -237,14 +237,56 @@ val.trailing_zeros();  // 0
 
 ---
 
-## Explicit Conversion
+## Type Conversions
+
+### Safe Conversion: `to<T>()`
+
+Converts to type `T`, returning `Optional<T>`. Returns `None` if the value doesn't fit in the target type.
+
+| Target Type | Behavior |
+|-------------|----------|
+| Larger signed (`int16_t`, `int32_t`, etc.) | Always succeeds (widening) |
+| Unsigned (`uint8_t`, `uint16_t`, etc.) | Returns `None` if value is negative |
+| Same size | Always succeeds |
+
+```cpp
+auto a = 50_i8;
+
+// Widening - always succeeds
+auto i32_val = a.to<std::int32_t>();  // Some(50)
+
+// To unsigned - works for non-negative
+auto u8_val = a.to<std::uint8_t>();   // Some(50)
+
+// Negative to unsigned - fails
+auto neg = i8(static_cast<std::int8_t>(-50));
+auto u8_neg = neg.to<std::uint8_t>(); // None
+```
+
+### Unchecked Conversion: `as<T>()`
+
+Performs an unchecked `static_cast` to type `T` (like Rust's `as` keyword). Use when you know the conversion is safe or want C-style wrapping behavior.
+
+```cpp
+auto a = 50_i8;
+
+// Widening
+int x = a.as<int>();  // 50
+
+// Negative to unsigned - wraps (like C)
+auto neg = i8(static_cast<std::int8_t>(-1));
+std::uint8_t u = neg.as<std::uint8_t>();  // 255
+
+auto neg50 = i8(static_cast<std::int8_t>(-50));
+std::uint8_t v = neg50.as<std::uint8_t>(); // 206
+```
+
+### Legacy Accessors
 
 | Method | Description |
 |--------|-------------|
-| `static_cast<std::int8_t>(a)` | Explicit conversion to underlying type |
-| `a.get()` | Same as above, but clearer |
-
----
+| `get()` | Returns the underlying `std::int8_t` value |
+| `static_cast<std::int8_t>(a)` | Explicit conversion operator |
 
 ## Stream Output
 
