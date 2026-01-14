@@ -6,7 +6,8 @@
 
 import pulgacpp.i8;
 
-import std;
+#include <iostream>
+#include <string_view>
 
 using namespace pulgacpp;
 using namespace pulgacpp::literals;
