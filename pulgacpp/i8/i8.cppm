@@ -1,11 +1,18 @@
 // pulgacpp::i8 - Type-safe signed 8-bit integer with checked arithmetic
 // SPDX-License-Identifier: MIT
 
+module;
+
+#include <cstdint>
+#include <limits>
+#include <utility>
+#include <bit>
+#include <iostream>
+#include <concepts>
+
 export module pulgacpp.i8;
 
 export import pulgacpp.optional;
-
-import std;
 
 export namespace pulgacpp {
 

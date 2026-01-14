@@ -1,9 +1,17 @@
 // pulgacpp::optional - Rust-inspired Optional type with no exceptions
 // SPDX-License-Identifier: MIT
 
-export module pulgacpp.optional;
+module;
 
-import std;
+#include <optional>
+#include <iostream>
+#include <string_view>
+#include <functional>
+#include <concepts>
+#include <utility>
+#include <cstdlib>
+
+export module pulgacpp.optional;
 
 export namespace pulgacpp {
 
