@@ -1,0 +1,39 @@
+# Build artifacts
+*.obj
+*.o
+*.exe
+*.out
+*.ifc
+*.pcm
+*.bmi
+
+# IDE/Editor
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln
+*.vcxproj*
+.idea/
+*.swp
+*~
+
+# CMake
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled Module Interfaces
+*.gcm
+*.d
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
