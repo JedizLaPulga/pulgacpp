@@ -6,6 +6,14 @@
 #include "i8.hpp"
 #include <iostream>
 #include <string_view>
+#include <vector>
+#include <list>
+#include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
+#include <numeric>
 
 using namespace pulgacpp;
 using namespace pulgacpp::literals;
@@ -295,6 +303,81 @@ int main() {
 
         auto neg50 = i8(static_cast<std::int8_t>(-50));
         test(neg50.as<std::uint8_t>() == 206, "as<uint8_t>() wraps -50 to 206");
+    }
+
+    // --- STL Container Usage ---
+    std::cout << "\n--- STL Container Usage ---\n";
+    {
+        // std::vector
+        std::vector<i8> vec = {10_i8, 30_i8, 20_i8};
+        vec.push_back(40_i8);
+        test(vec.size() == 4, "vector: push_back works");
+        test(vec[0].get() == 10, "vector: operator[] works");
+        test(vec.back().get() == 40, "vector: back() works");
+
+        // std::list
+        std::list<i8> lst = {1_i8, 2_i8, 3_i8};
+        lst.push_front(0_i8);
+        test(lst.size() == 4, "list: push_front works");
+        test(lst.front().get() == 0, "list: front() works");
+
+        // std::set (ordered, uses operator<=>)
+        std::set<i8> s = {5_i8, 3_i8, 7_i8, 3_i8};  // duplicate ignored
+        test(s.size() == 3, "set: duplicates ignored");
+        test(s.begin()->get() == 3, "set: sorted (smallest first)");
+        test(s.contains(5_i8), "set: contains() works");
+        test(!s.contains(99_i8), "set: contains() returns false for missing");
+
+        // std::map (i8 as key)
+        std::map<i8, std::string> m;
+        m[1_i8] = "one";
+        m[2_i8] = "two";
+        m[1_i8] = "ONE";  // overwrite
+        test(m.size() == 2, "map: size correct");
+        test(m[1_i8] == "ONE", "map: operator[] works");
+        test(m.at(2_i8) == "two", "map: at() works");
+
+        // std::unordered_set (uses std::hash<i8>)
+        std::unordered_set<i8> us = {10_i8, 20_i8, 30_i8, 20_i8};
+        test(us.size() == 3, "unordered_set: duplicates ignored");
+        test(us.contains(20_i8), "unordered_set: contains() works");
+        test(!us.contains(99_i8), "unordered_set: contains() returns false for missing");
+
+        // std::unordered_map (i8 as key, uses std::hash<i8>)
+        std::unordered_map<i8, int> um;
+        um[5_i8] = 500;
+        um[10_i8] = 1000;
+        test(um.size() == 2, "unordered_map: size correct");
+        test(um[5_i8] == 500, "unordered_map: operator[] works");
+
+        // std::sort
+        std::vector<i8> unsorted = {50_i8, 10_i8, 30_i8, 20_i8, 40_i8};
+        std::sort(unsorted.begin(), unsorted.end());
+        test(unsorted[0].get() == 10, "sort: smallest first");
+        test(unsorted[4].get() == 50, "sort: largest last");
+
+        // std::find
+        auto it = std::find(unsorted.begin(), unsorted.end(), 30_i8);
+        test(it != unsorted.end() && it->get() == 30, "find: found element");
+        auto not_found = std::find(unsorted.begin(), unsorted.end(), 99_i8);
+        test(not_found == unsorted.end(), "find: returns end() for missing");
+
+        // std::accumulate with saturating_add
+        std::vector<i8> nums = {100_i8, 50_i8, 30_i8};  // sum would overflow
+        auto sum = std::accumulate(nums.begin(), nums.end(), 0_i8,
+            [](i8 a, i8 b) { return a.saturating_add(b); });
+        test(sum.get() == i8::MAX, "accumulate: saturating_add clamps to MAX");
+
+        // std::count
+        std::vector<i8> with_dupes = {1_i8, 2_i8, 1_i8, 3_i8, 1_i8};
+        auto count = std::count(with_dupes.begin(), with_dupes.end(), 1_i8);
+        test(count == 3, "count: counts occurrences correctly");
+
+        // std::min_element / std::max_element
+        auto min_it = std::min_element(unsorted.begin(), unsorted.end());
+        auto max_it = std::max_element(unsorted.begin(), unsorted.end());
+        test(min_it->get() == 10, "min_element: finds minimum");
+        test(max_it->get() == 50, "max_element: finds maximum");
     }
 
     // --- Summary ---
