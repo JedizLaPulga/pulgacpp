@@ -36,14 +36,10 @@ public:
     /// Creates an i16 from a value, returning None if out of range.
     template <std::integral T>
     [[nodiscard]] static constexpr Optional<i16> from(T value) noexcept {
-        if constexpr (std::is_signed_v<T>) {
-            if (value < static_cast<T>(MIN) || value > static_cast<T>(MAX)) {
-                return None;
-            }
-        } else {
-            if (value > static_cast<std::make_unsigned_t<underlying_type>>(MAX)) {
-                return None;
-            }
+        // Widen to int32_t for safe comparison
+        auto wide_value = static_cast<std::int32_t>(value);
+        if (wide_value < static_cast<std::int32_t>(MIN) || wide_value > static_cast<std::int32_t>(MAX)) {
+            return None;
         }
         return Some(i16(static_cast<underlying_type>(value)));
     }
