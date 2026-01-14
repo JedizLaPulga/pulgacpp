@@ -292,4 +292,12 @@ namespace literals {
 
 } // namespace pulgacpp
 
+// std::hash specialization for unordered containers
+template <>
+struct std::hash<pulgacpp::i8> {
+    [[nodiscard]] constexpr std::size_t operator()(pulgacpp::i8 value) const noexcept {
+        return std::hash<pulgacpp::i8::underlying_type>{}(value.get());
+    }
+};
+
 #endif // PULGACPP_I8_HPP
