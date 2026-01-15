@@ -100,6 +100,78 @@ public:
         return static_cast<T>(m_value);
     }
 
+    // ==================== Inter-type conversions ====================
+    
+    /// Concept to detect a pulgacpp SafeInt type
+    template <typename T>
+    static constexpr bool is_safe_int_v = requires {
+        typename T::underlying_type;
+        typename T::wider_type;
+        { T::BITS } -> std::convertible_to<unsigned>;
+        { T::MIN } -> std::convertible_to<typename T::underlying_type>;
+        { T::MAX } -> std::convertible_to<typename T::underlying_type>;
+    };
+
+    /// Safe widening conversion to a larger SafeInt type.
+    /// The target type must be able to hold all values of this type.
+    /// Returns the target type directly (always succeeds for valid widening).
+    template <typename Target>
+        requires is_safe_int_v<Target> && (Target::BITS >= BITS)
+    [[nodiscard]] constexpr Target widen() const noexcept {
+        return Target(static_cast<typename Target::underlying_type>(m_value));
+    }
+
+    /// Checked narrowing conversion to a smaller SafeInt type.
+    /// Returns Optional<Target> - None if the value doesn't fit.
+    template <typename Target>
+        requires is_safe_int_v<Target>
+    [[nodiscard]] constexpr Optional<Target> narrow() const noexcept {
+        // Check if value fits in target range
+        using target_underlying = typename Target::underlying_type;
+        
+        // Handle signed -> unsigned conversion
+        if constexpr (!std::is_signed_v<target_underlying> && IsSigned) {
+            if (m_value < 0) {
+                return None;
+            }
+        }
+        
+        // Check bounds
+        if constexpr (std::is_signed_v<target_underlying> && std::is_signed_v<underlying_type>) {
+            // Both signed
+            if (m_value < static_cast<underlying_type>(Target::MIN) || 
+                m_value > static_cast<underlying_type>(Target::MAX)) {
+                return None;
+            }
+        } else if constexpr (!std::is_signed_v<target_underlying> && !std::is_signed_v<underlying_type>) {
+            // Both unsigned
+            if (m_value > static_cast<underlying_type>(Target::MAX)) {
+                return None;
+            }
+        } else if constexpr (std::is_signed_v<target_underlying> && !std::is_signed_v<underlying_type>) {
+            // Unsigned -> signed
+            if (m_value > static_cast<underlying_type>(Target::MAX)) {
+                return None;
+            }
+        } else {
+            // Signed -> unsigned (already checked for negative above)
+            if (static_cast<std::make_unsigned_t<underlying_type>>(m_value) > 
+                static_cast<std::make_unsigned_t<underlying_type>>(Target::MAX)) {
+                return None;
+            }
+        }
+        
+        return Some(Target(static_cast<target_underlying>(m_value)));
+    }
+
+    /// Unchecked conversion to another SafeInt type (like Rust's `as`).
+    /// Performs a static_cast without bounds checking.
+    template <typename Target>
+        requires is_safe_int_v<Target>
+    [[nodiscard]] constexpr Target cast() const noexcept {
+        return Target(static_cast<typename Target::underlying_type>(m_value));
+    }
+
     // Checked arithmetic - returns Optional<SafeInt>
     [[nodiscard]] constexpr Optional<SafeInt> checked_add(SafeInt rhs) const noexcept {
         wider_type result = static_cast<wider_type>(m_value) + static_cast<wider_type>(rhs.m_value);
