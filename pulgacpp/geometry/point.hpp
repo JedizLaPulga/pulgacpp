@@ -61,10 +61,10 @@ public:
 
     /// Translate by (dx, dy), returns Optional on overflow
     [[nodiscard]] constexpr Optional<Point> checked_translate(T dx, T dy) const noexcept {
-        auto new_x = checked_add(m_x, dx);
+        auto new_x = pulgacpp::checked_add(m_x, dx);
         if (new_x.is_none()) return None;
         
-        auto new_y = checked_add(m_y, dy);
+        auto new_y = pulgacpp::checked_add(m_y, dy);
         if (new_y.is_none()) return None;
         
         return Some(Point(new_x.unwrap(), new_y.unwrap()));
