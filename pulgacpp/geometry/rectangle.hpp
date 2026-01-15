@@ -8,6 +8,7 @@
 #include "point.hpp"
 #include <algorithm>
 #include <array>
+#include <tuple>
 
 namespace pulgacpp {
 
@@ -74,20 +75,22 @@ public:
         }
     }
 
-    /// Factory: create from center and dimensions
-    [[nodiscard]] static constexpr Optional<Rectangle<double>> from_center(
+    /// Factory: create from center and dimensions (returns tuple: success, rectangle)
+    [[nodiscard]] static constexpr std::pair<bool, Rectangle<double>> from_center(
         Point<T> center, T width, T height) noexcept 
     {
         if (raw(width) < 0 || raw(height) < 0) {
-            return None;
+            return {false, Rectangle<double>{}};
         }
         double half_w = to_double(width) / 2.0;
         double half_h = to_double(height) / 2.0;
-        auto min = Point<double>::from(
-            to_double(center.x()) - half_w,
-            to_double(center.y()) - half_h
-        );
-        return Rectangle<double>::from_corner(min, to_double(width), to_double(height));
+        return {true, Rectangle<double>(
+            Point<double>::from(
+                to_double(center.x()) - half_w,
+                to_double(center.y()) - half_h
+            ),
+            to_double(width), to_double(height)
+        )};
     }
 
     /// Factory: unit square at origin
@@ -221,8 +224,8 @@ public:
         return ax1 <= bx2 && ax2 >= bx1 && ay1 <= by2 && ay2 >= by1;
     }
 
-    /// Get intersection rectangle, returns None if no intersection
-    [[nodiscard]] constexpr Optional<Rectangle<double>> intersection(Rectangle other) const noexcept {
+    /// Get intersection rectangle (returns pair: has_intersection, result)
+    [[nodiscard]] constexpr std::pair<bool, Rectangle<double>> intersection(Rectangle other) const noexcept {
         double ax1 = to_double(m_min.x());
         double ay1 = to_double(m_min.y());
         double ax2 = ax1 + to_double(m_width);
@@ -239,14 +242,14 @@ public:
         double iy2 = std::min(ay2, by2);
         
         if (ix1 > ix2 || iy1 > iy2) {
-            return None;
+            return {false, Rectangle<double>{}};
         }
         
-        return Rectangle<double>::from_corner(
+        return {true, Rectangle<double>(
             Point<double>::from(ix1, iy1),
             ix2 - ix1,
             iy2 - iy1
-        );
+        )};
     }
 
     /// Check if this rectangle contains another entirely
@@ -283,18 +286,20 @@ public:
         return Some(Rectangle(m_min, new_w.unwrap(), new_h.unwrap()));
     }
 
-    /// Expand rectangle by amount on all sides
-    [[nodiscard]] constexpr Optional<Rectangle<double>> expanded(double amount) const noexcept {
+    /// Expand rectangle by amount on all sides (returns pair: success, result)
+    [[nodiscard]] constexpr std::pair<bool, Rectangle<double>> expanded(double amount) const noexcept {
         double new_w = to_double(m_width) + 2.0 * amount;
         double new_h = to_double(m_height) + 2.0 * amount;
-        if (new_w < 0 || new_h < 0) return None;
-        return Rectangle<double>::from_corner(
+        if (new_w < 0 || new_h < 0) {
+            return {false, Rectangle<double>{}};
+        }
+        return {true, Rectangle<double>(
             Point<double>::from(
                 to_double(m_min.x()) - amount,
                 to_double(m_min.y()) - amount
             ),
             new_w, new_h
-        );
+        )};
     }
 
     // ==================== Comparison ====================
@@ -312,9 +317,10 @@ public:
     // ==================== Stream Output ====================
 
     friend std::ostream& operator<<(std::ostream& os, const Rectangle& r) {
-        return os << "Rectangle(min=" << r.m_min 
-                  << ", width=" << raw(r.m_width) 
-                  << ", height=" << raw(r.m_height) << ")";
+        os << "Rectangle(min=" << r.m_min 
+           << ", width=" << raw(r.m_width) 
+           << ", height=" << raw(r.m_height) << ")";
+        return os;
     }
 };
 
