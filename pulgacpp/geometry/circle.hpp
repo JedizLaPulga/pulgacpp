@@ -7,6 +7,7 @@
 #include "shape.hpp"
 #include "point.hpp"
 #include <cmath>
+#include <ostream>
 
 namespace pulgacpp {
 
