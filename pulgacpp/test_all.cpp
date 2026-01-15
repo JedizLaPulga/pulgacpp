@@ -65,6 +65,42 @@ int main() {
     auto wrapped_u = 255_u8.wrapping_add(1_u8);
     std::cout << "u8: 255 wrapping_add 1 = " << wrapped_u << " (wrapped to 0)\n";
 
+    // Test inter-type conversions
+    std::cout << "\n--- Inter-type Conversions ---\n";
+    
+    // widen: i8 -> i16 -> i32 -> i64
+    auto small = 50_i8;
+    auto widened16 = small.widen<i16>();
+    auto widened32 = small.widen<i32>();
+    auto widened64 = small.widen<i64>();
+    std::cout << "i8(50).widen<i16>() = " << widened16 << "\n";
+    std::cout << "i8(50).widen<i32>() = " << widened32 << "\n";
+    std::cout << "i8(50).widen<i64>() = " << widened64 << "\n";
+
+    // narrow: i32 -> i16 -> i8
+    auto big = 1000_i32;
+    auto narrowed_ok = 50_i32.narrow<i8>();
+    auto narrowed_fail = big.narrow<i8>();
+    std::cout << "i32(50).narrow<i8>() = " << (narrowed_ok.is_some() ? std::to_string(narrowed_ok.unwrap().get()) : "None") << "\n";
+    std::cout << "i32(1000).narrow<i8>() = " << (narrowed_fail.is_some() ? "Some" : "None (overflow!)") << "\n";
+
+    // narrow: signed -> unsigned
+    auto neg = i8(static_cast<std::int8_t>(-50));
+    auto pos = 50_i8;
+    auto neg_to_u8 = neg.narrow<u8>();
+    auto pos_to_u8 = pos.narrow<u8>();
+    std::cout << "i8(-50).narrow<u8>() = " << (neg_to_u8.is_some() ? "Some" : "None (negative!)") << "\n";
+    std::cout << "i8(50).narrow<u8>() = " << (pos_to_u8.is_some() ? std::to_string(pos_to_u8.unwrap().get()) : "None") << "\n";
+
+    // cast: unchecked (wraps like Rust's `as`)
+    auto neg_cast = neg.cast<u8>();
+    std::cout << "i8(-50).cast<u8>() = " << neg_cast << " (wraps to 206)\n";
+
+    // Cross-family: i16 -> u32
+    auto i16_val = 1000_i16;
+    auto i16_to_u32 = i16_val.widen<u32>();
+    std::cout << "i16(1000).widen<u32>() = " << i16_to_u32 << "\n";
+
     std::cout << "\n=== All Types Working! ===\n";
     return 0;
 }
