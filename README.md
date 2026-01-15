@@ -81,6 +81,8 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | `Circle<T>` | Circle shape | Area, perimeter, contains, intersects |
 | `Rectangle<T>` | Axis-aligned rect | Area, perimeter, intersection |
 
+📖 [Full Geometry Documentation](pulgacpp/geometry/geometrydoc.md)
+
 ### Coming Soon
 
 | Category | Types | Purpose |
