@@ -69,12 +69,12 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | `i16` | `u16` | 16 | [i16doc](pulgacpp/i16/i16doc.md) • [u16doc](pulgacpp/u16/u16doc.md) |
 | `i32` | `u32` | 32 | [i32doc](pulgacpp/i32/i32doc.md) • [u32doc](pulgacpp/u32/u32doc.md) |
 | `i64` | `u64` | 64 | [i64doc](pulgacpp/i64/i64doc.md) • [u64doc](pulgacpp/u64/u64doc.md) |
+| `isize` | `usize` | ptr | [isizedoc](pulgacpp/isize/isizedoc.md) • [usizedoc](pulgacpp/usize/usizedoc.md) |
 
 ### Coming Soon
 
 | Category | Types | Purpose |
 |----------|-------|---------|
-| **Pointer-Sized** | `isize`, `usize` | Platform-native integers |
 | **Error Handling** | `Result<T, E>` | Rust-style error returns |
 | **Geometry** | `Point`, `Vector`, `Circle`, `Rectangle` | Safe spatial modeling |
 | **Measurements** | `Length`, `Area`, `Volume`, `Angle` | Unit-safe calculations |
@@ -170,12 +170,12 @@ Detailed documentation for each type lives in its respective folder:
 ### ✅ Completed
 - Safe signed integers: `i8`, `i16`, `i32`, `i64`
 - Safe unsigned integers: `u8`, `u16`, `u32`, `u64`
+- Pointer-sized integers: `isize`, `usize`
 - `Optional<T>` with Rust-style API
 - Inter-type conversions: `widen`, `narrow`, `cast`
 - STL container compatibility
 
 ### 🔜 In Progress
-- `isize` / `usize` (pointer-sized integers)
 - `Result<T, E>` for rich error handling
 
 ### 📋 Planned
