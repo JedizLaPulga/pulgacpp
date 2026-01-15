@@ -172,11 +172,9 @@ Detailed documentation for each type lives in its respective folder:
 - Safe unsigned integers: `u8`, `u16`, `u32`, `u64`
 - Pointer-sized integers: `isize`, `usize`
 - `Optional<T>` with Rust-style API
+- `Result<T, E>` for rich error handling
 - Inter-type conversions: `widen`, `narrow`, `cast`
 - STL container compatibility
-
-### 🔜 In Progress
-- `Result<T, E>` for rich error handling
 
 ### 📋 Planned
 - Geometry types: `Point`, `Vector2D`, `Vector3D`, `Circle`, `Rectangle`
