@@ -6,6 +6,7 @@
 
 #include "shape.hpp"
 #include <cmath>
+#include <ostream>
 
 namespace pulgacpp {
 

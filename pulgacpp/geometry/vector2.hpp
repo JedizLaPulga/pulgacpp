@@ -7,7 +7,8 @@
 #include "shape.hpp"
 #include "point.hpp"
 #include <cmath>
-#include <tuple>
+#include <ostream>
+#include <string>
 
 namespace pulgacpp {
 
@@ -41,14 +42,6 @@ public:
         return Vector2{};
     }
 
-    /// Factory: from angle (radians) and magnitude
-    [[nodiscard]] static constexpr Vector2<double> from_angle(double angle, double magnitude = 1.0) noexcept {
-        return Vector2<double>::from(
-            magnitude * std::cos(angle),
-            magnitude * std::sin(angle)
-        );
-    }
-
     // ==================== Accessors ====================
 
     [[nodiscard]] constexpr T x() const noexcept { return m_x; }
@@ -79,30 +72,6 @@ public:
     /// Check if zero vector
     [[nodiscard]] constexpr bool is_zero() const noexcept {
         return raw(m_x) == 0 && raw(m_y) == 0;
-    }
-
-    // ==================== Normalization ====================
-
-    /// Normalize to unit vector
-    /// Returns (success, normalized_vector)
-    [[nodiscard]] constexpr std::pair<bool, Vector2<double>> try_normalized() const noexcept {
-        double mag = magnitude();
-        if (mag == 0.0) {
-            return {false, Vector2<double>::zero()};
-        }
-        return {true, Vector2<double>::from(
-            to_double(m_x) / mag,
-            to_double(m_y) / mag
-        )};
-    }
-
-    /// Normalize assuming non-zero (caller must check is_zero first)
-    [[nodiscard]] constexpr Vector2<double> normalized_unchecked() const noexcept {
-        double mag = magnitude();
-        return Vector2<double>::from(
-            to_double(m_x) / mag,
-            to_double(m_y) / mag
-        );
     }
 
     // ==================== Arithmetic (Checked) ====================
@@ -140,11 +109,6 @@ public:
         return Some(Vector2(new_x.unwrap(), new_y.unwrap()));
     }
 
-    /// Negate vector
-    [[nodiscard]] constexpr Vector2<double> negated() const noexcept {
-        return Vector2<double>::from(-to_double(m_x), -to_double(m_y));
-    }
-
     // ==================== Vector Operations ====================
 
     /// Dot product
@@ -162,25 +126,6 @@ public:
     /// Angle from positive x-axis (radians)
     [[nodiscard]] constexpr double angle() const noexcept {
         return std::atan2(to_double(m_y), to_double(m_x));
-    }
-
-    /// Perpendicular vector (90° counter-clockwise)
-    [[nodiscard]] constexpr Vector2<double> perpendicular() const noexcept {
-        return Vector2<double>::from(-to_double(m_y), to_double(m_x));
-    }
-
-    // ==================== Rotation ====================
-
-    /// Rotate by angle (radians)
-    [[nodiscard]] constexpr Vector2<double> rotated(double angle) const noexcept {
-        double cos_a = std::cos(angle);
-        double sin_a = std::sin(angle);
-        double x = to_double(m_x);
-        double y = to_double(m_y);
-        return Vector2<double>::from(
-            x * cos_a - y * sin_a,
-            x * sin_a + y * cos_a
-        );
     }
 
     // ==================== Comparison ====================
@@ -210,15 +155,6 @@ public:
 
 // ==================== Free Functions ====================
 
-/// Create vector from two points (end - start)
-template <Numeric T>
-[[nodiscard]] constexpr Vector2<double> vector_from_points(Point<T> start, Point<T> end) noexcept {
-    return Vector2<double>::from(
-        to_double(end.x()) - to_double(start.x()),
-        to_double(end.y()) - to_double(start.y())
-    );
-}
-
 /// Normalize vector (returns Optional)
 template <Numeric T>
 [[nodiscard]] constexpr Optional<Vector2<double>> vec_normalized(const Vector2<T>& v) noexcept {
@@ -232,48 +168,46 @@ template <Numeric T>
     ));
 }
 
-/// Set magnitude of vector
+/// Perpendicular vector (90° counter-clockwise)
 template <Numeric T>
-[[nodiscard]] constexpr Optional<Vector2<double>> vec_with_magnitude(const Vector2<T>& v, double new_mag) noexcept {
-    auto norm = vec_normalized(v);
-    if (norm.is_none()) return None;
-    auto n = norm.unwrap();
-    return Some(Vector2<double>::from(n.x() * new_mag, n.y() * new_mag));
+[[nodiscard]] constexpr Vector2<double> vec_perpendicular(const Vector2<T>& v) noexcept {
+    return Vector2<double>::from(-to_double(v.y()), to_double(v.x()));
 }
 
-/// Project vector a onto vector b
-template <Numeric T, Numeric U>
-[[nodiscard]] constexpr Optional<Vector2<double>> vec_project(const Vector2<T>& a, const Vector2<U>& b) noexcept {
-    double b_mag_sq = b.magnitude_squared();
-    if (b_mag_sq == 0.0) return None;
-    double scalar = a.dot(b) / b_mag_sq;
-    return Some(Vector2<double>::from(
-        to_double(b.x()) * scalar,
-        to_double(b.y()) * scalar
-    ));
+/// Negate vector
+template <Numeric T>
+[[nodiscard]] constexpr Vector2<double> vec_negated(const Vector2<T>& v) noexcept {
+    return Vector2<double>::from(-to_double(v.x()), -to_double(v.y()));
 }
 
-/// Reflect vector across a normal
-template <Numeric T, Numeric U>
-[[nodiscard]] constexpr Optional<Vector2<double>> vec_reflect(const Vector2<T>& v, const Vector2<U>& normal) noexcept {
-    auto norm = vec_normalized(normal);
-    if (norm.is_none()) return None;
-    auto n = norm.unwrap();
-    double d = 2.0 * v.dot(n);
-    return Some(Vector2<double>::from(
-        to_double(v.x()) - d * n.x(),
-        to_double(v.y()) - d * n.y()
-    ));
+/// Rotate vector by angle (radians)
+template <Numeric T>
+[[nodiscard]] constexpr Vector2<double> vec_rotated(const Vector2<T>& v, double angle) noexcept {
+    double cos_a = std::cos(angle);
+    double sin_a = std::sin(angle);
+    double x = to_double(v.x());
+    double y = to_double(v.y());
+    return Vector2<double>::from(
+        x * cos_a - y * sin_a,
+        x * sin_a + y * cos_a
+    );
 }
 
-/// Angle between two vectors
-template <Numeric T, Numeric U>
-[[nodiscard]] constexpr Optional<double> vec_angle_between(const Vector2<T>& a, const Vector2<U>& b) noexcept {
-    double mag_product = a.magnitude() * b.magnitude();
-    if (mag_product == 0.0) return None;
-    double cos_angle = a.dot(b) / mag_product;
-    cos_angle = std::max(-1.0, std::min(1.0, cos_angle));
-    return Some(std::acos(cos_angle));
+/// Create vector from angle (radians) and magnitude
+[[nodiscard]] inline Vector2<double> vec_from_angle(double angle, double magnitude = 1.0) noexcept {
+    return Vector2<double>::from(
+        magnitude * std::cos(angle),
+        magnitude * std::sin(angle)
+    );
+}
+
+/// Create vector from two points (end - start)
+template <Numeric T>
+[[nodiscard]] constexpr Vector2<double> vector_from_points(Point<T> start, Point<T> end) noexcept {
+    return Vector2<double>::from(
+        to_double(end.x()) - to_double(start.x()),
+        to_double(end.y()) - to_double(start.y())
+    );
 }
 
 // Type aliases
