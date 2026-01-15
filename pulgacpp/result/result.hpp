@@ -4,7 +4,7 @@
 #ifndef PULGACPP_RESULT_HPP
 #define PULGACPP_RESULT_HPP
 
-#include "optional.hpp"  // For panic()
+#include "../optional/optional.hpp"  // For panic() and Optional<T>
 
 #include <variant>
 #include <utility>
