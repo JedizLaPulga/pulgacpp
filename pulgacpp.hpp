@@ -14,6 +14,7 @@
 //   #include <pulgacpp/u64/u64.hpp>   // Include only u64
 //   #include <pulgacpp/usize/usize.hpp>  // Include only usize
 //   #include <pulgacpp/result/result.hpp>  // Include only Result<T,E>
+//   #include <pulgacpp/geometry/geometry.hpp>  // Include geometry types
 
 #ifndef PULGACPP_HPP
 #define PULGACPP_HPP
@@ -35,5 +36,8 @@
 #include "pulgacpp/u32/u32.hpp"
 #include "pulgacpp/u64/u64.hpp"
 #include "pulgacpp/usize/usize.hpp"
+
+// Geometry (2D shapes)
+#include "pulgacpp/geometry/geometry.hpp"
 
 #endif // PULGACPP_HPP

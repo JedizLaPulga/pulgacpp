@@ -72,15 +72,24 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | `i64` | `u64` | 64 | [i64doc](pulgacpp/i64/i64doc.md) • [u64doc](pulgacpp/u64/u64doc.md) |
 | `isize` | `usize` | ptr | [isizedoc](pulgacpp/isize/isizedoc.md) • [usizedoc](pulgacpp/usize/usizedoc.md) |
 
+### Geometry (2D Shapes)
+
+| Type | Description | Key Features |
+|------|-------------|--------------|
+| `Point<T>` | 2D point | Distance, midpoint, rotate, lerp |
+| `Vector2<T>` | 2D vector | Magnitude, dot, cross, normalize |
+| `Circle<T>` | Circle shape | Area, perimeter, contains, intersects |
+| `Rectangle<T>` | Axis-aligned rect | Area, perimeter, intersection |
+
 ### Coming Soon
 
 | Category | Types | Purpose |
 |----------|-------|---------|
-| **Geometry** | `Point`, `Vector`, `Circle`, `Rectangle` | Safe spatial modeling |
 | **Measurements** | `Length`, `Area`, `Volume`, `Angle` | Unit-safe calculations |
 | **Time** | `Duration`, `Instant` | Safe time handling |
 | **Currency** | `Money<Currency>` | Precise financial types |
 | **Collections** | `Slice<T>`, `String` | Bounds-checked containers |
+| **3D Geometry** | `Vector3`, `Sphere`, `Box` | 3D spatial modeling |
 
 ---
 
@@ -173,11 +182,12 @@ Detailed documentation for each type lives in its respective folder:
 - Pointer-sized integers: `isize`, `usize`
 - `Optional<T>` with Rust-style API
 - `Result<T, E>` for rich error handling
+- 2D Geometry: `Point`, `Vector2`, `Circle`, `Rectangle`
 - Inter-type conversions: `widen`, `narrow`, `cast`
 - STL container compatibility
 
 ### 📋 Planned
-- Geometry types: `Point`, `Vector2D`, `Vector3D`, `Circle`, `Rectangle`
+- 3D Geometry: `Vector3`, `Sphere`, `Box`, `Cylinder`
 - Measurement types with unit safety
 - Time types: `Duration`, `Instant`
 - Currency types with precision guarantees
