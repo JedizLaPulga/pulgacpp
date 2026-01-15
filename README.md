@@ -60,6 +60,7 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | Type | Description | Documentation |
 |------|-------------|---------------|
 | `Optional<T>` | Rust-style optional with `.unwrap()`, `.map()`, etc. | [optional/](pulgacpp/optional/) |
+| `Result<T, E>` | Rust-style error handling with `Ok`/`Err` | [resultdoc](pulgacpp/result/resultdoc.md) |
 
 ### Safe Integers
 
@@ -75,7 +76,6 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 
 | Category | Types | Purpose |
 |----------|-------|---------|
-| **Error Handling** | `Result<T, E>` | Rust-style error returns |
 | **Geometry** | `Point`, `Vector`, `Circle`, `Rectangle` | Safe spatial modeling |
 | **Measurements** | `Length`, `Area`, `Volume`, `Angle` | Unit-safe calculations |
 | **Time** | `Duration`, `Instant` | Safe time handling |

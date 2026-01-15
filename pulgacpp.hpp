@@ -13,12 +13,14 @@
 //   #include <pulgacpp/u32/u32.hpp>   // Include only u32
 //   #include <pulgacpp/u64/u64.hpp>   // Include only u64
 //   #include <pulgacpp/usize/usize.hpp>  // Include only usize
+//   #include <pulgacpp/result/result.hpp>  // Include only Result<T,E>
 
 #ifndef PULGACPP_HPP
 #define PULGACPP_HPP
 
-// Core
+// Core types
 #include "pulgacpp/optional/optional.hpp"
+#include "pulgacpp/result/result.hpp"
 
 // Signed integers
 #include "pulgacpp/i8/i8.hpp"
