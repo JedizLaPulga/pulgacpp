@@ -3,6 +3,7 @@
 
 #include "../pulgacpp.hpp"
 #include <iostream>
+#include <string>
 
 using namespace pulgacpp;
 using namespace pulgacpp::literals;
