@@ -7,6 +7,7 @@
 #include "shape.hpp"
 #include "point.hpp"
 #include <cmath>
+#include <tuple>
 
 namespace pulgacpp {
 
@@ -38,24 +39,6 @@ public:
     /// Factory: zero vector
     [[nodiscard]] static constexpr Vector2 zero() noexcept {
         return Vector2{};
-    }
-
-    /// Factory: unit vector in X direction
-    [[nodiscard]] static constexpr Vector2<double> unit_x() noexcept {
-        return Vector2<double>::from(1.0, 0.0);
-    }
-
-    /// Factory: unit vector in Y direction
-    [[nodiscard]] static constexpr Vector2<double> unit_y() noexcept {
-        return Vector2<double>::from(0.0, 1.0);
-    }
-
-    /// Factory: from two points (end - start)
-    [[nodiscard]] static constexpr Vector2<double> from_points(Point<T> start, Point<T> end) noexcept {
-        return Vector2<double>::from(
-            to_double(end.x()) - to_double(start.x()),
-            to_double(end.y()) - to_double(start.y())
-        );
     }
 
     /// Factory: from angle (radians) and magnitude
@@ -100,24 +83,26 @@ public:
 
     // ==================== Normalization ====================
 
-    /// Normalize to unit vector, returns None if zero vector
-    [[nodiscard]] constexpr Optional<Vector2<double>> normalized() const noexcept {
+    /// Normalize to unit vector
+    /// Returns (success, normalized_vector)
+    [[nodiscard]] constexpr std::pair<bool, Vector2<double>> try_normalized() const noexcept {
         double mag = magnitude();
         if (mag == 0.0) {
-            return None;
+            return {false, Vector2<double>::zero()};
         }
-        return Some(Vector2<double>::from(
+        return {true, Vector2<double>::from(
             to_double(m_x) / mag,
             to_double(m_y) / mag
-        ));
+        )};
     }
 
-    /// Set magnitude to given value
-    [[nodiscard]] constexpr Optional<Vector2<double>> with_magnitude(double new_mag) const noexcept {
-        auto norm = normalized();
-        if (norm.is_none()) return None;
-        auto n = norm.unwrap();
-        return Some(Vector2<double>::from(n.x() * new_mag, n.y() * new_mag));
+    /// Normalize assuming non-zero (caller must check is_zero first)
+    [[nodiscard]] constexpr Vector2<double> normalized_unchecked() const noexcept {
+        double mag = magnitude();
+        return Vector2<double>::from(
+            to_double(m_x) / mag,
+            to_double(m_y) / mag
+        );
     }
 
     // ==================== Arithmetic (Checked) ====================
@@ -174,47 +159,14 @@ public:
                to_double(m_y) * to_double(other.m_x);
     }
 
-    /// Angle between vectors (radians)
-    [[nodiscard]] constexpr Optional<double> angle_to(Vector2 other) const noexcept {
-        double mag_product = magnitude() * other.magnitude();
-        if (mag_product == 0.0) return None;
-        double cos_angle = dot(other) / mag_product;
-        // Clamp to [-1, 1] to handle floating point errors
-        cos_angle = std::max(-1.0, std::min(1.0, cos_angle));
-        return Some(std::acos(cos_angle));
-    }
-
     /// Angle from positive x-axis (radians)
     [[nodiscard]] constexpr double angle() const noexcept {
         return std::atan2(to_double(m_y), to_double(m_x));
     }
 
-    /// Project this vector onto another
-    [[nodiscard]] constexpr Optional<Vector2<double>> project_onto(Vector2 other) const noexcept {
-        double other_mag_sq = other.magnitude_squared();
-        if (other_mag_sq == 0.0) return None;
-        double scalar = dot(other) / other_mag_sq;
-        return Some(Vector2<double>::from(
-            to_double(other.m_x) * scalar,
-            to_double(other.m_y) * scalar
-        ));
-    }
-
     /// Perpendicular vector (90° counter-clockwise)
     [[nodiscard]] constexpr Vector2<double> perpendicular() const noexcept {
         return Vector2<double>::from(-to_double(m_y), to_double(m_x));
-    }
-
-    /// Reflect across a normal vector
-    [[nodiscard]] constexpr Optional<Vector2<double>> reflect(Vector2 normal) const noexcept {
-        auto norm = normal.normalized();
-        if (norm.is_none()) return None;
-        auto n = norm.unwrap();
-        double d = 2.0 * dot(Vector2<double>::from(n.x(), n.y()));
-        return Some(Vector2<double>::from(
-            to_double(m_x) - d * n.x(),
-            to_double(m_y) - d * n.y()
-        ));
     }
 
     // ==================== Rotation ====================
@@ -251,9 +203,78 @@ public:
     // ==================== Stream Output ====================
 
     friend std::ostream& operator<<(std::ostream& os, const Vector2& v) {
-        return os << "Vector2(" << raw(v.m_x) << ", " << raw(v.m_y) << ")";
+        os << "Vector2(" << raw(v.m_x) << ", " << raw(v.m_y) << ")";
+        return os;
     }
 };
+
+// ==================== Free Functions ====================
+
+/// Create vector from two points (end - start)
+template <Numeric T>
+[[nodiscard]] constexpr Vector2<double> vector_from_points(Point<T> start, Point<T> end) noexcept {
+    return Vector2<double>::from(
+        to_double(end.x()) - to_double(start.x()),
+        to_double(end.y()) - to_double(start.y())
+    );
+}
+
+/// Normalize vector (returns Optional)
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Vector2<double>> vec_normalized(const Vector2<T>& v) noexcept {
+    double mag = v.magnitude();
+    if (mag == 0.0) {
+        return None;
+    }
+    return Some(Vector2<double>::from(
+        to_double(v.x()) / mag,
+        to_double(v.y()) / mag
+    ));
+}
+
+/// Set magnitude of vector
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Vector2<double>> vec_with_magnitude(const Vector2<T>& v, double new_mag) noexcept {
+    auto norm = vec_normalized(v);
+    if (norm.is_none()) return None;
+    auto n = norm.unwrap();
+    return Some(Vector2<double>::from(n.x() * new_mag, n.y() * new_mag));
+}
+
+/// Project vector a onto vector b
+template <Numeric T, Numeric U>
+[[nodiscard]] constexpr Optional<Vector2<double>> vec_project(const Vector2<T>& a, const Vector2<U>& b) noexcept {
+    double b_mag_sq = b.magnitude_squared();
+    if (b_mag_sq == 0.0) return None;
+    double scalar = a.dot(b) / b_mag_sq;
+    return Some(Vector2<double>::from(
+        to_double(b.x()) * scalar,
+        to_double(b.y()) * scalar
+    ));
+}
+
+/// Reflect vector across a normal
+template <Numeric T, Numeric U>
+[[nodiscard]] constexpr Optional<Vector2<double>> vec_reflect(const Vector2<T>& v, const Vector2<U>& normal) noexcept {
+    auto norm = vec_normalized(normal);
+    if (norm.is_none()) return None;
+    auto n = norm.unwrap();
+    double d = 2.0 * v.dot(n);
+    return Some(Vector2<double>::from(
+        to_double(v.x()) - d * n.x(),
+        to_double(v.y()) - d * n.y()
+    ));
+}
+
+/// Angle between two vectors
+template <Numeric T, Numeric U>
+[[nodiscard]] constexpr Optional<double> vec_angle_between(const Vector2<T>& a, const Vector2<U>& b) noexcept {
+    double mag_product = a.magnitude() * b.magnitude();
+    if (mag_product == 0.0) return None;
+    double cos_angle = a.dot(b) / mag_product;
+    cos_angle = std::max(-1.0, std::min(1.0, cos_angle));
+    return Some(std::acos(cos_angle));
+}
 
 // Type aliases
 using Vec2i = Vector2<int>;

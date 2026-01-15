@@ -10,9 +10,6 @@
 
 namespace pulgacpp {
 
-// Forward declaration
-template <Numeric T> class Rectangle;
-
 /// A circle defined by center point and radius
 template <Numeric T>
 class Circle : public Shape2D<Circle<T>, T> {
@@ -51,36 +48,8 @@ public:
         if constexpr (std::is_arithmetic_v<T>) {
             return Circle(Point<T>::origin(), static_cast<T>(1));
         } else {
-            // For pulgacpp types, caller must provide proper value
             return Circle{};
         }
-    }
-
-    /// Factory: create from three points on circumference
-    [[nodiscard]] static constexpr Optional<Circle<double>> from_points(
-        Point<T> p1, Point<T> p2, Point<T> p3) noexcept 
-    {
-        // Calculate circumcenter using determinants
-        double ax = to_double(p1.x()), ay = to_double(p1.y());
-        double bx = to_double(p2.x()), by = to_double(p2.y());
-        double cx = to_double(p3.x()), cy = to_double(p3.y());
-
-        double d = 2.0 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
-        if (std::abs(d) < 1e-10) {
-            return None;  // Points are collinear
-        }
-
-        double ux = ((ax * ax + ay * ay) * (by - cy) + 
-                     (bx * bx + by * by) * (cy - ay) + 
-                     (cx * cx + cy * cy) * (ay - by)) / d;
-        double uy = ((ax * ax + ay * ay) * (cx - bx) + 
-                     (bx * bx + by * by) * (ax - cx) + 
-                     (cx * cx + cy * cy) * (bx - ax)) / d;
-
-        auto center = Point<double>::from(ux, uy);
-        double radius = center.distance_to(Point<double>::from(ax, ay));
-        
-        return Circle<double>::from(center, radius);
     }
 
     // ==================== Accessors ====================
@@ -141,8 +110,6 @@ public:
         double dist = m_center.distance_to(other.m_center);
         double r1 = to_double(m_radius);
         double r2 = to_double(other.m_radius);
-        // Intersects if distance between centers <= sum of radii
-        // and >= absolute difference of radii (not one inside the other without touching)
         return dist <= r1 + r2 && dist >= std::abs(r1 - r2);
     }
 
@@ -234,10 +201,39 @@ public:
     // ==================== Stream Output ====================
 
     friend std::ostream& operator<<(std::ostream& os, const Circle& c) {
-        return os << "Circle(center=" << c.m_center 
-                  << ", radius=" << raw(c.m_radius) << ")";
+        os << "Circle(center=" << c.m_center << ", radius=" << raw(c.m_radius) << ")";
+        return os;
     }
 };
+
+// ==================== Free Functions ====================
+
+/// Create circle from three points on circumference
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Circle<double>> circle_from_points(
+    Point<T> p1, Point<T> p2, Point<T> p3) noexcept 
+{
+    double ax = to_double(p1.x()), ay = to_double(p1.y());
+    double bx = to_double(p2.x()), by = to_double(p2.y());
+    double cx = to_double(p3.x()), cy = to_double(p3.y());
+
+    double d = 2.0 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+    if (std::abs(d) < 1e-10) {
+        return None;  // Points are collinear
+    }
+
+    double ux = ((ax * ax + ay * ay) * (by - cy) + 
+                 (bx * bx + by * by) * (cy - ay) + 
+                 (cx * cx + cy * cy) * (ay - by)) / d;
+    double uy = ((ax * ax + ay * ay) * (cx - bx) + 
+                 (bx * bx + by * by) * (ax - cx) + 
+                 (cx * cx + cy * cy) * (bx - ax)) / d;
+
+    auto center = Point<double>::from(ux, uy);
+    double radius = center.distance_to(Point<double>::from(ax, ay));
+    
+    return Circle<double>::from(center, radius);
+}
 
 // Type aliases
 using Circle32 = Circle<std::int32_t>;

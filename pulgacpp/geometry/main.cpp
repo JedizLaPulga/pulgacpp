@@ -62,7 +62,7 @@ int main() {
     test(approx_eq(v1.magnitude(), 5.0), "Vector2 magnitude");
     test(approx_eq(v1.magnitude_squared(), 25.0), "Vector2 magnitude_squared");
     
-    auto normalized = v1.normalized();
+    auto normalized = vec_normalized(v1);
     test(normalized.is_some(), "Vector2 normalize returns Some");
     test(approx_eq(normalized.unwrap().magnitude(), 1.0), "Normalized vector has magnitude 1");
     
@@ -73,7 +73,7 @@ int main() {
     
     auto zero = Vector2<double>::zero();
     test(zero.is_zero(), "Vector2::zero() is_zero");
-    test(zero.normalized().is_none(), "Cannot normalize zero vector");
+    test(vec_normalized(zero).is_none(), "Cannot normalize zero vector");
 
     auto angle = v2.angle();
     test(approx_eq(angle, 0.0), "Vector2 angle from x-axis");
@@ -108,8 +108,8 @@ int main() {
     auto c3 = Circle<double>::from(Point<double>::from(20.0, 0.0), 5.0).unwrap();
     test(!c.overlaps(c3), "Distant circles do not overlap");
 
-    // Circle from three points
-    auto circle_3pt = Circle<double>::from_points(
+    // Circle from three points (free function)
+    auto circle_3pt = circle_from_points(
         Point<double>::from(0.0, 5.0),
         Point<double>::from(5.0, 0.0),
         Point<double>::from(-5.0, 0.0)
@@ -150,9 +150,9 @@ int main() {
     auto r3 = Rectangle<double>::from_corner(Point<double>::from(5.0, 0.0), 10.0, 5.0).unwrap();
     test(r.intersects(r3), "Overlapping rectangles intersect");
     
-    auto [has_intersection, intersection_rect] = r.intersection(r3);
-    test(has_intersection, "Intersection exists");
-    test(approx_eq(intersection_rect.width(), 5.0), "Intersection width correct");
+    auto intersection = rect_intersection(r, r3);
+    test(intersection.is_some(), "Intersection exists");
+    test(approx_eq(intersection.unwrap().width(), 5.0), "Intersection width correct");
 
     auto corners = r.corners();
     test(corners.size() == 4, "Rectangle has 4 corners");

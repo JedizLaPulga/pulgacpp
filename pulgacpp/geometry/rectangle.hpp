@@ -8,7 +8,6 @@
 #include "point.hpp"
 #include <algorithm>
 #include <array>
-#include <tuple>
 
 namespace pulgacpp {
 
@@ -75,24 +74,6 @@ public:
         }
     }
 
-    /// Factory: create from center and dimensions (returns tuple: success, rectangle)
-    [[nodiscard]] static constexpr std::pair<bool, Rectangle<double>> from_center(
-        Point<T> center, T width, T height) noexcept 
-    {
-        if (raw(width) < 0 || raw(height) < 0) {
-            return {false, Rectangle<double>{}};
-        }
-        double half_w = to_double(width) / 2.0;
-        double half_h = to_double(height) / 2.0;
-        return {true, Rectangle<double>(
-            Point<double>::from(
-                to_double(center.x()) - half_w,
-                to_double(center.y()) - half_h
-            ),
-            to_double(width), to_double(height)
-        )};
-    }
-
     /// Factory: unit square at origin
     [[nodiscard]] static constexpr Rectangle unit() noexcept {
         if constexpr (std::is_arithmetic_v<T>) {
@@ -146,10 +127,10 @@ public:
         double x2 = x1 + to_double(m_width);
         double y2 = y1 + to_double(m_height);
         return {
-            Point<double>::from(x1, y1),  // bottom-left
-            Point<double>::from(x2, y1),  // bottom-right
-            Point<double>::from(x2, y2),  // top-right
-            Point<double>::from(x1, y2)   // top-left
+            Point<double>::from(x1, y1),
+            Point<double>::from(x2, y1),
+            Point<double>::from(x2, y2),
+            Point<double>::from(x1, y2)
         };
     }
 
@@ -224,34 +205,6 @@ public:
         return ax1 <= bx2 && ax2 >= bx1 && ay1 <= by2 && ay2 >= by1;
     }
 
-    /// Get intersection rectangle (returns pair: has_intersection, result)
-    [[nodiscard]] constexpr std::pair<bool, Rectangle<double>> intersection(Rectangle other) const noexcept {
-        double ax1 = to_double(m_min.x());
-        double ay1 = to_double(m_min.y());
-        double ax2 = ax1 + to_double(m_width);
-        double ay2 = ay1 + to_double(m_height);
-        
-        double bx1 = to_double(other.m_min.x());
-        double by1 = to_double(other.m_min.y());
-        double bx2 = bx1 + to_double(other.m_width);
-        double by2 = by1 + to_double(other.m_height);
-        
-        double ix1 = std::max(ax1, bx1);
-        double iy1 = std::max(ay1, by1);
-        double ix2 = std::min(ax2, bx2);
-        double iy2 = std::min(ay2, by2);
-        
-        if (ix1 > ix2 || iy1 > iy2) {
-            return {false, Rectangle<double>{}};
-        }
-        
-        return {true, Rectangle<double>(
-            Point<double>::from(ix1, iy1),
-            ix2 - ix1,
-            iy2 - iy1
-        )};
-    }
-
     /// Check if this rectangle contains another entirely
     [[nodiscard]] constexpr bool contains_rect(Rectangle other) const noexcept {
         double ax1 = to_double(m_min.x());
@@ -286,22 +239,6 @@ public:
         return Some(Rectangle(m_min, new_w.unwrap(), new_h.unwrap()));
     }
 
-    /// Expand rectangle by amount on all sides (returns pair: success, result)
-    [[nodiscard]] constexpr std::pair<bool, Rectangle<double>> expanded(double amount) const noexcept {
-        double new_w = to_double(m_width) + 2.0 * amount;
-        double new_h = to_double(m_height) + 2.0 * amount;
-        if (new_w < 0 || new_h < 0) {
-            return {false, Rectangle<double>{}};
-        }
-        return {true, Rectangle<double>(
-            Point<double>::from(
-                to_double(m_min.x()) - amount,
-                to_double(m_min.y()) - amount
-            ),
-            new_w, new_h
-        )};
-    }
-
     // ==================== Comparison ====================
 
     [[nodiscard]] constexpr bool operator==(const Rectangle& other) const noexcept {
@@ -323,6 +260,75 @@ public:
         return os;
     }
 };
+
+// ==================== Free Functions ====================
+
+/// Get intersection of two rectangles
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Rectangle<double>> rect_intersection(
+    const Rectangle<T>& a, const Rectangle<T>& b) noexcept 
+{
+    double ax1 = to_double(a.min_corner().x());
+    double ay1 = to_double(a.min_corner().y());
+    double ax2 = ax1 + to_double(a.width());
+    double ay2 = ay1 + to_double(a.height());
+    
+    double bx1 = to_double(b.min_corner().x());
+    double by1 = to_double(b.min_corner().y());
+    double bx2 = bx1 + to_double(b.width());
+    double by2 = by1 + to_double(b.height());
+    
+    double ix1 = std::max(ax1, bx1);
+    double iy1 = std::max(ay1, by1);
+    double ix2 = std::min(ax2, bx2);
+    double iy2 = std::min(ay2, by2);
+    
+    if (ix1 > ix2 || iy1 > iy2) {
+        return None;
+    }
+    
+    return Rectangle<double>::from_corner(
+        Point<double>::from(ix1, iy1),
+        ix2 - ix1,
+        iy2 - iy1
+    );
+}
+
+/// Create rectangle from center and dimensions
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Rectangle<double>> rect_from_center(
+    Point<T> center, T width, T height) noexcept 
+{
+    if (raw(width) < 0 || raw(height) < 0) {
+        return None;
+    }
+    double half_w = to_double(width) / 2.0;
+    double half_h = to_double(height) / 2.0;
+    return Rectangle<double>::from_corner(
+        Point<double>::from(
+            to_double(center.x()) - half_w,
+            to_double(center.y()) - half_h
+        ),
+        to_double(width), to_double(height)
+    );
+}
+
+/// Expand rectangle by amount on all sides
+template <Numeric T>
+[[nodiscard]] constexpr Optional<Rectangle<double>> rect_expanded(
+    const Rectangle<T>& r, double amount) noexcept 
+{
+    double new_w = to_double(r.width()) + 2.0 * amount;
+    double new_h = to_double(r.height()) + 2.0 * amount;
+    if (new_w < 0 || new_h < 0) return None;
+    return Rectangle<double>::from_corner(
+        Point<double>::from(
+            to_double(r.min_corner().x()) - amount,
+            to_double(r.min_corner().y()) - amount
+        ),
+        new_w, new_h
+    );
+}
 
 // Type aliases
 using Rect32 = Rectangle<std::int32_t>;
