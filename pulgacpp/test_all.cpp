@@ -33,6 +33,13 @@ int main() {
     std::cout << "u32: " << b32 << " (MIN=" << u32::MIN << ", MAX=" << u32::MAX << ")\n";
     std::cout << "u64: " << b64 << " (MIN=" << u64::MIN << ", MAX=" << u64::MAX << ")\n";
 
+    // Test pointer-sized types
+    auto ais = 1000000_isize;
+    auto aus = 1000000_usize;
+
+    std::cout << "\nisize: " << ais << " (BITS=" << isize::BITS << ")\n";
+    std::cout << "usize: " << aus << " (BITS=" << usize::BITS << ")\n";
+
     // Test checked arithmetic on each
     std::cout << "\n--- Checked Arithmetic ---\n";
     
