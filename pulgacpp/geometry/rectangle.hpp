@@ -8,6 +8,7 @@
 #include "point.hpp"
 #include <algorithm>
 #include <array>
+#include <ostream>
 
 namespace pulgacpp {
 

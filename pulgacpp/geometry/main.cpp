@@ -68,7 +68,7 @@ int main() {
     
     test(approx_eq(v1.dot(v2), 3.0), "Vector2 dot product");
     
-    auto perp = v2.perpendicular();
+    auto perp = vec_perpendicular(v2);
     test(approx_eq(perp.x(), 0.0) && approx_eq(perp.y(), 1.0), "Vector2 perpendicular");
     
     auto zero = Vector2<double>::zero();
@@ -78,7 +78,7 @@ int main() {
     auto angle = v2.angle();
     test(approx_eq(angle, 0.0), "Vector2 angle from x-axis");
     
-    auto rotated = v2.rotated(constants::PI / 2.0);  // 90 degrees
+    auto rotated = vec_rotated(v2, constants::PI / 2.0);  // 90 degrees
     test(approx_eq(rotated.x(), 0.0, 1e-6) && approx_eq(rotated.y(), 1.0, 1e-6), "Vector2 rotate 90°");
 
     // ==================== Circle Tests ====================
