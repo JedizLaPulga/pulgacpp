@@ -1,7 +1,6 @@
 // Test suite for pulgacpp::Result<T, E>
 // Compile: cl /std:c++latest /EHsc /W4 main.cpp
 
-#include "../optional/optional.hpp"
 #include "result.hpp"
 #include <iostream>
 #include <string>
