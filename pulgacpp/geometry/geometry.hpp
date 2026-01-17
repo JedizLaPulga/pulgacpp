@@ -1,7 +1,7 @@
 // pulgacpp::geometry - All geometry types
 // SPDX-License-Identifier: MIT
 //
-// Include this header for all 2D geometry types.
+// Include this header for all 2D and 3D geometry types.
 //
 // Usage:
 //   #include <pulgacpp/geometry/geometry.hpp>
@@ -13,9 +13,13 @@
 #include "shape.hpp"
 
 // 2D types
-#include "point.hpp"
-#include "vector2.hpp"
 #include "circle.hpp"
+#include "point.hpp"
 #include "rectangle.hpp"
+#include "vector2.hpp"
+
+
+// 3D types
+#include "vector3.hpp"
 
 #endif // PULGACPP_GEOMETRY_HPP
