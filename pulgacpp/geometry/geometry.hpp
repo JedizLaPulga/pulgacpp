@@ -19,9 +19,11 @@
 #include "rectangle.hpp"
 #include "vector2.hpp"
 
-
 // 3D types
+#include "box.hpp"
+#include "sphere.hpp"
 #include "vector3.hpp"
+
 
 // Angular types
 #include "angle.hpp"
