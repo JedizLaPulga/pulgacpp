@@ -14,9 +14,11 @@
 
 // 2D types
 #include "circle.hpp"
+#include "linesegment.hpp"
 #include "point.hpp"
 #include "rectangle.hpp"
 #include "vector2.hpp"
+
 
 // 3D types
 #include "vector3.hpp"
