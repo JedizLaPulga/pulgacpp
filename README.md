@@ -86,12 +86,20 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | Type | Description | Key Features |
 |------|-------------|--------------|
 | `Vector3<T>` | 3D vector | Cross product, dot, normalize, reflect, slerp |
+| `Sphere<T>` | 3D sphere | Volume, surface area, contains, intersects |
+| `Box<T>` | Axis-aligned box | Volume, corners, intersection, AABB alias |
 
 ### Angular Types
 
 | Type | Description | Key Features |
 |------|-------------|--------------|
 | `Angle<T>` | Type-safe angle | from_degrees/radians, sin/cos/tan, normalize, `90_deg` literal |
+
+### Line Types
+
+| Type | Description | Key Features |
+|------|-------------|--------------|
+| `LineSegment<T>` | 2D segment | Length, intersection, distance, closest point |
 
 📖 [Full Geometry Documentation](pulgacpp/geometry/geometrydoc.md)
 
@@ -103,7 +111,7 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | **Time** | `Duration`, `Instant` | Safe time handling |
 | **Currency** | `Money<Currency>` | Precise financial types |
 | **Collections** | `Slice<T>`, `String` | Bounds-checked containers |
-| **3D Geometry** | `Sphere`, `Box`, `Plane` | 3D spatial shapes |
+| **3D Geometry** | `Cylinder`, `Plane`, `Ray` | Additional 3D primitives |
 
 ---
 
@@ -196,15 +204,16 @@ Detailed documentation for each type lives in its respective folder:
 - Pointer-sized integers: `isize`, `usize`
 - `Optional<T>` with Rust-style API
 - `Result<T, E>` for rich error handling
-- 2D Geometry: `Point`, `Vector2`, `Circle`, `Rectangle`
-- 3D Geometry: `Vector3` with cross product, reflection, slerp
+- 2D Geometry: `Point`, `Vector2`, `Circle`, `Rectangle`, `LineSegment`
+- 3D Geometry: `Vector3`, `Sphere`, `Box` (AABB)
 - Angular types: `Angle<T>` with degrees/radians, trig, literals
+- Scientific constants (math, physics, chemistry, astronomy)
 - Inter-type conversions: `widen`, `narrow`, `cast`
 - STL container compatibility
 - 64-bit overflow detection (MSVC intrinsics)
 
 ### 📋 Planned
-- 3D Shapes: `Sphere`, `Box`, `Plane`
+- 3D Primitives: `Cylinder`, `Plane`, `Ray`
 - Measurement types with unit safety
 - Time types: `Duration`, `Instant`
 - Currency types with precision guarantees
