@@ -24,20 +24,25 @@
 #include "pulgacpp/result/result.hpp"
 
 // Signed integers
-#include "pulgacpp/i8/i8.hpp"
 #include "pulgacpp/i16/i16.hpp"
 #include "pulgacpp/i32/i32.hpp"
 #include "pulgacpp/i64/i64.hpp"
+#include "pulgacpp/i8/i8.hpp"
 #include "pulgacpp/isize/isize.hpp"
 
+
 // Unsigned integers
-#include "pulgacpp/u8/u8.hpp"
 #include "pulgacpp/u16/u16.hpp"
 #include "pulgacpp/u32/u32.hpp"
 #include "pulgacpp/u64/u64.hpp"
+#include "pulgacpp/u8/u8.hpp"
 #include "pulgacpp/usize/usize.hpp"
 
-// Geometry (2D shapes)
+
+// Geometry (2D/3D shapes and angles)
 #include "pulgacpp/geometry/geometry.hpp"
+
+// Scientific constants
+#include "pulgacpp/constants/constants.hpp"
 
 #endif // PULGACPP_HPP
