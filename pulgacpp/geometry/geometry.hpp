@@ -18,8 +18,10 @@
 #include "rectangle.hpp"
 #include "vector2.hpp"
 
-
 // 3D types
 #include "vector3.hpp"
+
+// Angular types
+#include "angle.hpp"
 
 #endif // PULGACPP_GEOMETRY_HPP
