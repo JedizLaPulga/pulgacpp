@@ -11,14 +11,13 @@
 #include <cmath>
 #include <ostream>
 
-
 namespace pulgacpp {
 
 // Forward declaration for intersection result
 template <Numeric T> class Rectangle;
 
 /// A 2D line segment defined by two endpoints
-template <Numeric T> class LineSegment : public Shape2D<LineSegment<T>> {
+template <Numeric T> class LineSegment : public Shape2D<LineSegment<T>, T> {
 public:
   using value_type = T;
   static constexpr std::string_view NAME = "LineSegment";
