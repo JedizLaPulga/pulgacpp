@@ -57,6 +57,29 @@
 - Type aliases: `LineSegmentd`, `Line2d`, `Line2f`, `Line2i`
 - **Tests**: 57 tests covering all features
 
+#### 6. **Added `Sphere<T>` Type** ✅
+- 3D sphere with center and radius
+- Features:
+  - Volume, surface area, circumference
+  - Containment: contains(), strictly_contains(), on_surface()
+  - Sphere relationships: overlaps(), intersects(), contains_sphere()
+  - Points: north_pole(), south_pole(), point_at(theta, phi)
+  - Transformations: translate, scale, expand
+- Type aliases: `Sphered`, `Spheref`, `Spherei`
+- **Tests**: Part of 3D shapes suite
+
+#### 7. **Added `Box<T>` (AABB) Type** ✅
+- 3D axis-aligned bounding box
+- Features:
+  - Volume, surface area, diagonal
+  - 8 corners via corners() or corner(index)
+  - Containment: contains(), strictly_contains(), contains_box()
+  - Box relationships: intersects(), intersection(), merged_with()
+  - Transformations: translate, scale, expand
+  - is_cube() check
+- Type aliases: `Boxd`, `Boxf`, `Boxi`, `AABB`
+- **Tests**: Part of 3D shapes suite
+
 ### 📊 Test Summary
 | Test Suite | Tests | Status |
 |------------|-------|--------|
@@ -66,6 +89,7 @@
 | Angle | 55 | ✅ Pass |
 | Constants | 46 | ✅ Pass |
 | LineSegment | 57 | ✅ Pass |
+| Sphere + Box | 73 | ✅ Pass |
 | Geometry (game world) | 226 | ✅ Pass |
 
 ### 📝 Files Created/Modified
@@ -74,11 +98,14 @@
 - `pulgacpp/geometry/vector3.hpp` (NEW)
 - `pulgacpp/geometry/angle.hpp` (NEW)
 - `pulgacpp/geometry/linesegment.hpp` (NEW)
+- `pulgacpp/geometry/sphere.hpp` (NEW)
+- `pulgacpp/geometry/box.hpp` (NEW)
 - `pulgacpp/constants/constants.hpp` (NEW)
 - `pulgacpp/geometry/geometry.hpp` (MODIFIED - includes)
 - `pulgacpp/geometry/test/test_vector3.cpp` (NEW)
 - `pulgacpp/geometry/test/test_angle.cpp` (NEW)
 - `pulgacpp/geometry/test/test_linesegment.cpp` (NEW)
+- `pulgacpp/geometry/test/test_3d_shapes.cpp` (NEW)
 - `pulgacpp/constants/test_constants.cpp` (NEW)
 - `pulgacpp/test_64bit_overflow.cpp` (NEW)
 - `README.md` (UPDATED)
