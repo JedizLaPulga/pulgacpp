@@ -36,6 +36,26 @@
   - Literal operators: `90_deg`, `3.14_rad`
 - Type aliases: `Anglef`, `Angled`
 - **Tests**: 55 tests covering all features
+#### 4. **Added Scientific Constants Module** ✅
+- Comprehensive collection organized by discipline
+- Namespaces: `math`, `physics`, `chemistry`, `astronomy`, `engineering`, `computing`, `time`
+- UPPERCASE naming (Rust-style)
+- Includes aliases (e.g., `C` = `SPEED_OF_LIGHT`, `N_A` = `AVOGADRO`)
+- **Tests**: 46 tests covering all namespaces
+
+#### 5. **Added `LineSegment<T>` Type** ✅
+- Complete 2D line segment with all essential operations
+- Features:
+  - Length, midpoint, point_at(t), lerp
+  - Direction vector, unit direction, normal
+  - Closest point to external point
+  - Distance to point
+  - Line segment intersection
+  - Containment checks
+  - Transformations: translate, extend, reverse
+  - Bounding box
+- Type aliases: `LineSegmentd`, `Line2d`, `Line2f`, `Line2i`
+- **Tests**: 57 tests covering all features
 
 ### 📊 Test Summary
 | Test Suite | Tests | Status |
@@ -44,16 +64,22 @@
 | 64-bit overflow | 28 | ✅ Pass |
 | Vector3 | 42 | ✅ Pass |
 | Angle | 55 | ✅ Pass |
-| Geometry | 226 | ✅ Pass |
+| Constants | 46 | ✅ Pass |
+| LineSegment | 57 | ✅ Pass |
+| Geometry (game world) | 226 | ✅ Pass |
 
 ### 📝 Files Created/Modified
 - `pulgacpp/core/overflow.hpp` (NEW)
 - `pulgacpp/core/safe_int.hpp` (MODIFIED - 64-bit intrinsics)
 - `pulgacpp/geometry/vector3.hpp` (NEW)
 - `pulgacpp/geometry/angle.hpp` (NEW)
+- `pulgacpp/geometry/linesegment.hpp` (NEW)
+- `pulgacpp/constants/constants.hpp` (NEW)
 - `pulgacpp/geometry/geometry.hpp` (MODIFIED - includes)
 - `pulgacpp/geometry/test/test_vector3.cpp` (NEW)
 - `pulgacpp/geometry/test/test_angle.cpp` (NEW)
+- `pulgacpp/geometry/test/test_linesegment.cpp` (NEW)
+- `pulgacpp/constants/test_constants.cpp` (NEW)
 - `pulgacpp/test_64bit_overflow.cpp` (NEW)
 - `README.md` (UPDATED)
 - `improvement.md` (UPDATED)
