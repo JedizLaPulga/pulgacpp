@@ -81,17 +81,29 @@ Every type in pulgacpp is designed with **explicitness** at its core:
 | `Circle<T>` | Circle shape | Area, perimeter, contains, intersects |
 | `Rectangle<T>` | Axis-aligned rect | Area, perimeter, intersection |
 
+### Geometry (3D)
+
+| Type | Description | Key Features |
+|------|-------------|--------------|
+| `Vector3<T>` | 3D vector | Cross product, dot, normalize, reflect, slerp |
+
+### Angular Types
+
+| Type | Description | Key Features |
+|------|-------------|--------------|
+| `Angle<T>` | Type-safe angle | from_degrees/radians, sin/cos/tan, normalize, `90_deg` literal |
+
 📖 [Full Geometry Documentation](pulgacpp/geometry/geometrydoc.md)
 
 ### Coming Soon
 
 | Category | Types | Purpose |
 |----------|-------|---------|
-| **Measurements** | `Length`, `Area`, `Volume`, `Angle` | Unit-safe calculations |
+| **Measurements** | `Length`, `Area`, `Volume` | Unit-safe calculations |
 | **Time** | `Duration`, `Instant` | Safe time handling |
 | **Currency** | `Money<Currency>` | Precise financial types |
 | **Collections** | `Slice<T>`, `String` | Bounds-checked containers |
-| **3D Geometry** | `Vector3`, `Sphere`, `Box` | 3D spatial modeling |
+| **3D Geometry** | `Sphere`, `Box`, `Plane` | 3D spatial shapes |
 
 ---
 
@@ -185,11 +197,14 @@ Detailed documentation for each type lives in its respective folder:
 - `Optional<T>` with Rust-style API
 - `Result<T, E>` for rich error handling
 - 2D Geometry: `Point`, `Vector2`, `Circle`, `Rectangle`
+- 3D Geometry: `Vector3` with cross product, reflection, slerp
+- Angular types: `Angle<T>` with degrees/radians, trig, literals
 - Inter-type conversions: `widen`, `narrow`, `cast`
 - STL container compatibility
+- 64-bit overflow detection (MSVC intrinsics)
 
 ### 📋 Planned
-- 3D Geometry: `Vector3`, `Sphere`, `Box`, `Cylinder`
+- 3D Shapes: `Sphere`, `Box`, `Plane`
 - Measurement types with unit safety
 - Time types: `Duration`, `Instant`
 - Currency types with precision guarantees
